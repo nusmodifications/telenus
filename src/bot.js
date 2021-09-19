@@ -69,7 +69,7 @@ class Bot {
     this.bot.on("text", ctx => {
       const messageText = ctx.message.text;
       if (spamMatchingPatterns.some(pattern => messageText.includes(pattern))) {
-        if (ctx?.message?.from?.id) {
+        if (ctx.message.from && ctx.message.from.id) {
           ctx.kickChatMember(ctx.message.from.id);
         }
         ctx.deleteMessage(ctx.message.message_id);
