@@ -1,6 +1,6 @@
 # TeleNUS
 
-Just another community-maintained platform for managing NUS-related Telegram groups.
+Just another community-maintained platform for managing NUS-related Telegram groups. This project was originally created by Eugene Lim (@eugenood) and he has gracefully allowed NUSModifications to house this project so that we can build tighter integration of TeleNUS with NUSMods, while at the same time encouraging more community contributions.
 
 ## Overview
 

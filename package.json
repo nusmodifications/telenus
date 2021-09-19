@@ -1,14 +1,14 @@
 {
   "name": "telenus",
   "version": "1.0.0",
-  "description": "Just another community-maintained platform for managing NUS-related Telegram groups.",
+  "description": "A community-maintained platform for managing NUS-related Telegram groups.",
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eugenood/telenus.git"
+    "url": "https://github.com/nusmodifications/telenus.git"
   },
   "author": "Eugene Lim",
   "license": "MIT",
