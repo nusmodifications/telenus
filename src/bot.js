@@ -1,4 +1,5 @@
 const Telegraf = require("telegraf");
+const spamMatchingPatterns = require("./spam_filters");
 
 class Bot {
 
@@ -61,6 +62,16 @@ class Bot {
 
     this.bot.on(['new_chat_members', 'left_chat_member'], ctx => {
       if (db.groupExist(ctx.chat.id)) {
+        ctx.deleteMessage(ctx.message.message_id);
+      }
+    });
+
+    this.bot.on("text", ctx => {
+      const messageText = ctx.message.text;
+      if (spamMatchingPatterns.some(pattern => messageText.includes(pattern))) {
+        if (ctx?.message?.from?.id) {
+          ctx.kickChatMember(ctx.message.from.id);
+        }
         ctx.deleteMessage(ctx.message.message_id);
       }
     });
