@@ -14,8 +14,13 @@ request.send();
 function displayGroups(groups) {
   groupsList.innerHTML = "";
   groups.forEach(group => {
+    const link = document.createElement("a");
+    link.href = group.link;
+    link.target = '_blank';
+    link.textContent = group.title;
+    
     const listItem = document.createElement("li");
-    listItem.innerHTML = `<a href="${group.link}" target="_blank">${group.title}</a>`;
+    listItem.appendChild(link);
     groupsList.appendChild(listItem);
   });
 }
