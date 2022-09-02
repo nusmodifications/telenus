@@ -26,6 +26,9 @@ class Bot {
       }
 
       if (ctx.message.from.username === ANONYMOUS) {
+        console.log(`Anonymous user tried to add a group
+        - Group ID: ${ctx.chat.id}
+        - Group Name: ${ctx.chat.title}`);
         return ctx.reply(
           "Anonymous group admins are not allowed to add a group to TeleNUS.\n\n" +
             "Additional usage notes: If you intend to use TeleNUS as a platform to push your political agenda or to post neferious content, " +
