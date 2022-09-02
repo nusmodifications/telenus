@@ -64,7 +64,7 @@ footer section h1 {
   margin-bottom: 5px;
 }
 
-footer section p {
+main p, footer section p {
   color: #ececec;
   font-family: sans-serif;
   font-size: 0.9rem;
