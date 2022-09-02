@@ -25,7 +25,7 @@ class Bot {
         return ctx.reply("This group has already been added.");
       }
 
-      if (ctx.message?.from?.username === ANONYMOUS) {
+      if (ctx.message.from.username === ANONYMOUS) {
         return ctx.reply(
           "Anonymous group admins are not allowed to add a group to TeleNUS.\n\n" +
             "Additional usage notes: If you intend to use TeleNUS as a platform to push your political agenda or to post neferious content, " +
@@ -39,7 +39,7 @@ class Bot {
         .then(async (inviteLink) => {
           const chat = await ctx.getChat(ctx.chat.id);
           db.addGroup(chat.id, chat.title, chat.invite_link);
-          if (ctx.message?.chat?.title && ctx.message?.from?.id) {
+          if (ctx.message.chat.title && ctx.message.from.id) {
             console.log(`Added new group
             - Group ID: ${ctx.chat.id}
             - Group Name: ${ctx.message.chat.title}
@@ -54,22 +54,6 @@ class Bot {
           return ctx.reply("Error. Please add me as an admin and try again.");
         });
     });
-
-    // from: {
-    //   id: 256297780,
-    //   is_bot: false,
-    //   first_name: 'Christopher',
-    //   last_name: 'Goh',
-    //   username: 'chrisgzf',
-    //   language_code: 'en'
-    // },
-
-    // from: {
-    //   id: 1087968824,
-    //   is_bot: true,
-    //   first_name: 'Group',
-    //   username: 'GroupAnonymousBot'
-    // },
 
     this.bot.command("remove", (ctx) => {
       if (!ctx.chat.type.includes("group")) {
