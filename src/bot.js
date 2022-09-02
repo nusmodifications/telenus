@@ -82,6 +82,10 @@ class Bot {
           ctx.kickChatMember(ctx.message.from.id);
         }
         ctx.deleteMessage(ctx.message.message_id);
+	if (ctx.message.chat.title) {
+	  console.log("Deleted message from group: " + ctx.message.chat.title);
+	}
+	console.log("Deleted message with text: " + messageText);
       }
     });
   }

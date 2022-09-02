@@ -12,6 +12,9 @@ const matchingPattern = [
   "finance, statistics, nursing",
   "paid trusted tutors",
   "lifewebir",
+  "Bellcurvehero",
+  "Techbumps",
+  "help you to search groups and channels",
 ];
 
 module.exports = matchingPattern;
