@@ -6,7 +6,7 @@ const ANONYMOUS = "GroupAnonymousBot";
 
 class Bot {
   constructor(botToken, db) {
-    this.bot = new Telegraf(botToken);
+    this.bot = new Telegraf.Telegraf(botToken);
 
     this.bot.telegram.getMe().then((botInfo) => {
       this.bot.options.username = botInfo.username;
