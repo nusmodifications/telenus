@@ -5,6 +5,8 @@ const superusers = require("./superusers");
 
 const ANONYMOUS = "GroupAnonymousBot";
 
+const allowedGroupNameRegex = /^[a-zA-z0-9]{3,}[a-zA-z0-9\/\(\)\s]*$/;
+
 async function checkBannedWithEffects(ctx) {
   if (!ctx.message) {
     return false;
@@ -75,6 +77,15 @@ class Bot {
         return ctx.reply("Group added.");
       }
 
+      if (!allowedGroupNameRegex.test(ctx.chat.title)) {
+        console.log(`Group blocked from adding due to name
+        - Group ID: ${ctx.chat.id}
+        - Group Name: ${ctx.chat.title}`);
+        return ctx.reply(
+          "Group name is not allowed. Please change your group name to something that only has alphanumeric characters, brackets, slashes. The first few characters must be alphanumeric."
+        );
+      }
+
       ctx
         .exportChatInviteLink()
         .then(async (inviteLink) => {
@@ -111,6 +122,16 @@ class Bot {
 
     this.bot.on("new_chat_title", (ctx) => {
       if (db.groupExist(ctx.chat.id)) {
+        if (!allowedGroupNameRegex.test(ctx.chat.title)) {
+          db.removeGroup(ctx.chat.id);
+          console.log(`Delisted group due to name change
+          - Group ID: ${ctx.chat.id}
+          - Group Name: ${ctx.chat.title}`);
+          return ctx.reply(
+            "Group name is not allowed. Please change your group name to something that only has alphanumeric characters, brackets, slashes. The first few characters must be alphanumeric. The group will be delisted from TeleNUS for now."
+          );
+        }
+
         db.updateGroupTitle(ctx.chat.id, ctx.chat.title);
       }
     });
