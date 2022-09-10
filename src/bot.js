@@ -1,8 +1,41 @@
 const Telegraf = require("telegraf");
+const bannedUsers = require("./banned_users");
 const spamMatchingPatterns = require("./spam_filters");
 const superusers = require("./superusers");
 
 const ANONYMOUS = "GroupAnonymousBot";
+
+async function checkBannedWithEffects(ctx) {
+  if (!ctx.message) {
+    return false;
+  }
+
+  const isBanned = bannedUsers.has(ctx.message.from.id);
+
+  if (isBanned) {
+    try {
+      await ctx.banChatMember(ctx.message.from.id);
+      console.log(`Banned user from group
+      - Group ID: ${ctx.chat.id}
+      - Group Name: ${ctx.message.chat.title}
+      - User ID: ${ctx.message.from.id}
+      - Username: ${ctx.message.from.username}
+      - First Name: ${ctx.message.from.first_name}
+      - Last Name: ${ctx.message.from.last_name}`);
+    } catch (err) {
+      console.log(`Unable to ban user from group
+      - Group ID: ${ctx.chat.id}
+      - Group Name: ${ctx.message.chat.title}
+      - User ID: ${ctx.message.from.id}
+      - Username: ${ctx.message.from.username}
+      - First Name: ${ctx.message.from.first_name}
+      - Last Name: ${ctx.message.from.last_name}
+      - Error: ${err}`);
+    }
+  }
+
+  return isBanned;
+}
 
 class Bot {
   constructor(botToken, db) {
@@ -16,7 +49,7 @@ class Bot {
       return ctx.reply("To add this group, add me as an admin and run /add.");
     });
 
-    this.bot.command("add", (ctx) => {
+    this.bot.command("add", async (ctx) => {
       if (!ctx.chat.type.includes("group")) {
         return ctx.reply("This chat is not a group.");
       }
@@ -35,6 +68,11 @@ class Bot {
             "please do not. It takes me **real effort**, on more than several occasions thus far, to have to moderate and delist your group, " +
             "on top of the assignments, coursework, and commitments I already have. I am a real student and human being just like you. Please stop."
         );
+      }
+
+      if (await checkBannedWithEffects(ctx)) {
+        // Shadowban response
+        return ctx.reply("Group added.");
       }
 
       ctx
@@ -77,8 +115,9 @@ class Bot {
       }
     });
 
-    this.bot.on(["new_chat_members", "left_chat_member"], (ctx) => {
-      ctx.deleteMessage(ctx.message.message_id);
+    this.bot.on(["new_chat_members", "left_chat_member"], async (ctx) => {
+      await ctx.deleteMessage(ctx.message.message_id);
+      await checkBannedWithEffects(ctx);
     });
 
     this.bot.command("nuke", (ctx) => {
@@ -91,18 +130,23 @@ class Bot {
     this.bot.command("nuke_ban", (ctx) => {
       if (ctx.message.reply_to_message && superusers.has(ctx.message.from.id)) {
         ctx.deleteMessage(ctx.message.reply_to_message.message_id);
-        ctx.kickChatMember(ctx.message.reply_to_message.from.id);
+        ctx.banChatMember(ctx.message.reply_to_message.from.id);
       }
       ctx.deleteMessage(ctx.message.message_id);
     });
 
-    this.bot.on("text", (ctx) => {
+    this.bot.on("text", async (ctx) => {
       const messageText = ctx.message.text;
+      if (await checkBannedWithEffects(ctx)) {
+        await ctx.deleteMessage(ctx.message.message_id);
+        return;
+      }
+
       if (
         spamMatchingPatterns.some((pattern) => messageText.includes(pattern))
       ) {
         if (ctx.message.from && ctx.message.from.id) {
-          ctx.kickChatMember(ctx.message.from.id);
+          ctx.banChatMember(ctx.message.from.id);
         }
         ctx.deleteMessage(ctx.message.message_id);
         if (ctx.message.chat.title) {
