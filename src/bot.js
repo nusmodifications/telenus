@@ -7,7 +7,7 @@ const ANONYMOUS = "GroupAnonymousBot";
 
 const allowedGroupNameRegex = /^[a-zA-z0-9]{3,}[a-zA-z0-9\/\(\)\s]*$/;
 
-async function checkBannedWithEffects(ctx) {
+function checkBannedWithEffects(ctx) {
   if (!ctx.message) {
     return false;
   }
@@ -17,7 +17,7 @@ async function checkBannedWithEffects(ctx) {
   if (isBanned) {
     try {
       console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
-      await ctx.banChatMember(ctx.message.from.id);
+      ctx.banChatMember(ctx.message.from.id);
       console.log(`Banned user from group
       - Group ID: ${ctx.chat.id}
       - Group Name: ${ctx.message.chat.title}
@@ -52,7 +52,7 @@ class Bot {
       return ctx.reply("To add this group, add me as an admin and run /add.");
     });
 
-    this.bot.command("add", async (ctx) => {
+    this.bot.command("add", (ctx) => {
       if (!ctx.chat.type.includes("group")) {
         return ctx.reply("This chat is not a group.");
       }
@@ -73,7 +73,7 @@ class Bot {
         );
       }
 
-      if (await checkBannedWithEffects(ctx)) {
+      if (checkBannedWithEffects(ctx)) {
         // Shadowban response
         return ctx.reply("Group added.");
       }
@@ -137,9 +137,9 @@ class Bot {
       }
     });
 
-    this.bot.on(["new_chat_members", "left_chat_member"], async (ctx) => {
-      await ctx.deleteMessage(ctx.message.message_id);
-      await checkBannedWithEffects(ctx);
+    this.bot.on(["new_chat_members", "left_chat_member"], (ctx) => {
+      ctx.deleteMessage(ctx.message.message_id);
+      checkBannedWithEffects(ctx);
     });
 
     this.bot.command("nuke", (ctx) => {
@@ -157,9 +157,9 @@ class Bot {
       ctx.deleteMessage(ctx.message.message_id);
     });
 
-    this.bot.on("text", async (ctx) => {
-      if (await checkBannedWithEffects(ctx)) {
-        await ctx.deleteMessage(ctx.message.message_id);
+    this.bot.on("text", (ctx) => {
+      if (checkBannedWithEffects(ctx)) {
+        ctx.deleteMessage(ctx.message.message_id);
         return;
       }
 
