@@ -16,6 +16,7 @@ async function checkBannedWithEffects(ctx) {
 
   if (isBanned) {
     try {
+      console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
       await ctx.banChatMember(ctx.message.from.id);
       console.log(`Banned user from group
       - Group ID: ${ctx.chat.id}
@@ -157,12 +158,12 @@ class Bot {
     });
 
     this.bot.on("text", async (ctx) => {
-      const messageText = ctx.message.text;
       if (await checkBannedWithEffects(ctx)) {
         await ctx.deleteMessage(ctx.message.message_id);
         return;
       }
 
+      const messageText = ctx.message.text;
       if (
         spamMatchingPatterns.some((pattern) => messageText.includes(pattern))
       ) {
