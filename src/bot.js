@@ -5,7 +5,7 @@ const superusers = require("./superusers");
 
 const ANONYMOUS = "GroupAnonymousBot";
 
-const allowedGroupNameRegex = /^[a-zA-z0-9]{3,}[a-zA-z0-9\/\(\)\s]*$/;
+const allowedGroupNameRegex = /^[a-zA-z0-9]{3,}[a-zA-z0-9\-\/\(\)\s]*$/;
 
 function checkBannedWithEffects(ctx) {
   if (!ctx.message) {
@@ -15,26 +15,23 @@ function checkBannedWithEffects(ctx) {
   const isBanned = bannedUsers.has(ctx.message.from.id);
 
   if (isBanned) {
-    try {
-      console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
-      ctx.banChatMember(ctx.message.from.id);
-      console.log(`Banned user from group
+    console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
+    ctx
+      .banChatMember(ctx.message.from.id)
+      .catch((err) => {
+        console.log(
+          `Unable to ban ${ctx.chat.id} | ${ctx.message.chat.title} | ${ctx.message.from.id} | ${ctx.message.from.username} | ${ctx.message.from.first_name} | ${ctx.message.from.last_name}`
+        );
+      })
+      .then(() => {
+        console.log(`Banned user from group
       - Group ID: ${ctx.chat.id}
       - Group Name: ${ctx.message.chat.title}
       - User ID: ${ctx.message.from.id}
       - Username: ${ctx.message.from.username}
       - First Name: ${ctx.message.from.first_name}
       - Last Name: ${ctx.message.from.last_name}`);
-    } catch (err) {
-      console.log(`Unable to ban user from group
-      - Group ID: ${ctx.chat.id}
-      - Group Name: ${ctx.message.chat.title}
-      - User ID: ${ctx.message.from.id}
-      - Username: ${ctx.message.from.username}
-      - First Name: ${ctx.message.from.first_name}
-      - Last Name: ${ctx.message.from.last_name}
-      - Error: ${err}`);
-    }
+      });
   }
 
   return isBanned;
@@ -96,10 +93,10 @@ class Bot {
             console.log(`Added new group
             - Group ID: ${ctx.chat.id}
             - Group Name: ${ctx.message.chat.title}
-            - Group Admin: ${ctx.message.from.id}
-            - Group Admin Username: ${ctx.message.from.username}
-            - Group Admin First Name: ${ctx.message.from.first_name}
-            - Group Admin Last Name: ${ctx.message.from.last_name}`);
+            - Adding User ID: ${ctx.message.from.id}
+            - Adding User Username: ${ctx.message.from.username}
+            - Adding User First Name: ${ctx.message.from.first_name}
+            - Adding User Last Name: ${ctx.message.from.last_name}`);
           }
           return ctx.reply("Group added.");
         })
@@ -138,7 +135,7 @@ class Bot {
     });
 
     this.bot.on(["new_chat_members", "left_chat_member"], (ctx) => {
-      ctx.deleteMessage(ctx.message.message_id);
+      ctx.deleteMessage(ctx.message.message_id).catch((err) => {});
       checkBannedWithEffects(ctx);
     });
 
