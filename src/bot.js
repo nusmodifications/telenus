@@ -1,5 +1,5 @@
 const Telegraf = require("telegraf");
-const bannedUsers = require("./banned_users");
+const banned = require("./banned");
 const spamMatchingPatterns = require("./spam_filters");
 const superusers = require("./superusers");
 
@@ -12,7 +12,7 @@ function checkBannedWithEffects(ctx) {
     return false;
   }
 
-  const isBanned = bannedUsers.has(ctx.message.from.id);
+  const isBanned = banned.bannedUsers.has(ctx.message.from.id);
 
   if (isBanned) {
     console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
@@ -81,6 +81,19 @@ class Bot {
         - Group Name: ${ctx.chat.title}`);
         return ctx.reply(
           "Group name is not allowed. Please change your group name to something that only has alphanumeric characters, brackets, slashes. The first few characters must be alphanumeric."
+        );
+      }
+
+      if (banned.bannedGroups.has(ctx.chat.id)) {
+        console.log(
+          `User ${ctx.message.from.id} | ${ctx.message.from.username} | ${ctx.message.from.first_name} | ${ctx.message.from.last_name} tried to add a banned group ${ctx.chat.id} | ${ctx.chat.title}`
+        );
+        return ctx.reply(
+          `This group has been permanently banned from the TeleNUS platform because:
+(1) it was created / administered by a user who has been found to have repeatly abused the TeleNUS platform and / or;
+(2) the contents of the group are deemed to not be in line with the TeleNUS mission of providing a safe and inclusive platform for NUS students to connect and share information.
+
+This group will not be added to TeleNUS. If you think that this group has value to the NUS community and if you are not a banned user, you may create a new group and add the new group to TeleNUS.`
         );
       }
 
