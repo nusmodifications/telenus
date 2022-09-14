@@ -18,11 +18,6 @@ function checkBannedWithEffects(ctx) {
     console.log(`User ${ctx.message.from.id} is banned. Attempting ban...`);
     ctx
       .banChatMember(ctx.message.from.id)
-      .catch((err) => {
-        console.log(
-          `Unable to ban ${ctx.chat.id} | ${ctx.message.chat.title} | ${ctx.message.from.id} | ${ctx.message.from.username} | ${ctx.message.from.first_name} | ${ctx.message.from.last_name}`
-        );
-      })
       .then(() => {
         console.log(`Banned user from group
       - Group ID: ${ctx.chat.id}
@@ -31,6 +26,11 @@ function checkBannedWithEffects(ctx) {
       - Username: ${ctx.message.from.username}
       - First Name: ${ctx.message.from.first_name}
       - Last Name: ${ctx.message.from.last_name}`);
+      })
+      .catch((err) => {
+        console.log(
+          `Unable to ban ${ctx.chat.id} | ${ctx.message.chat.title} | ${ctx.message.from.id} | ${ctx.message.from.username} | ${ctx.message.from.first_name} | ${ctx.message.from.last_name}`
+        );
       });
   }
 
